@@ -1,4 +1,5 @@
- ibdlod=3#$ -l h_vmem=16G
+#!/bin/bash
+
 #$ -pe smp 2
 #$ -binding linear:2
 #$ -l h_rt=300:00:00
