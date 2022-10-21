@@ -99,6 +99,16 @@ g6 <- pca  %>% filter(!is.na(PC1)) %>%  mutate(s=case_when(NP == '40-K-1061' ~ '
   scale_fill_manual(values = cols)
 grid.arrange(g1,g2,g4,g5, ncol=2, nrow=2)
 
+
+write.table(pca[,c(2:11)],paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/UMAP/esse.hrc.dr08_pruned_PLINK2_final.eigenvec",sep=''), sep='\t',quote = F,row.names = F)
+##umap
+umap = read.table('/humgen/atgu1/methods/dusoltsev/biobank/HRC/UMAP/esse.hrc.dr08_pruned_PLINK2_final.eigenvec_UMAP_PC10_NC3_NN10_MD0.001_euclidean_20221001_091211.txt',sep = ' ', header = F)
+umap <- cbind(umap,pca)
+umap %>%
+  ggplot(aes(V1,V2,col=REGION))+
+  geom_point()+
+  theme_classic()
+
 #PCA with 1000G
 
 sa_1000G = read.table('/humgen/atgu1/methods/dusoltsev/biobank/1kg_annotations.txt',sep = '\t', header = T)
@@ -195,13 +205,13 @@ grid.arrange(g7,g8, ncol=2, nrow=1)
 sa_1000G = read.table('/humgen/atgu1/methods/dusoltsev/biobank/1kg_annotations.txt',sep = '\t', header = T)
 colnames(sa_1000G)[1] <- 'NP'
 
-pca <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/esse.concat.hrc_qc_duprem_all_pruned_1000G_WGS_pca_exclude.txt",sep = '\t', header = T)
+pca <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/esse.concat.hrc_qc_duprem_all_pruned_1000G_WGS_15_pca_exclude.txt",sep = '\t', header = T)
 pca$scores <- gsub('\\{scores\\:\\[','',pca$scores)
 pca$scores <- gsub('\\]\\}','',pca$scores)
 pca$scores <- gsub('\\[','',pca$scores)
 pca$scores <- gsub('\\]','',pca$scores)
-pca <-  pca %>%separate(scores, c('PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8','PC9','PC10'),sep=',')
-for (i in 2:11) {
+pca <-  pca %>%separate(scores, c('PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8','PC9','PC10','PC11','PC12','PC13','PC14','PC15'),sep=',')
+for (i in 2:16) {
   pca[,i] <- as.numeric(pca[,i])
 }
 colnames(pca)[1] <- 'NP'
@@ -236,6 +246,41 @@ g7 <- pca  %>% filter(!is.na(PC1)) %>%
   scale_color_manual(values = cols)+
   theme(legend.position="none")+
   scale_fill_manual(values = cols)
+
+
+write.table(pca[,c(2:16)],paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/UMAP/esse.concat.hrc_qc_duprem_all_pruned_1000G_WGS_15_pca_exclude.txt",sep=''), sep='\t',quote = F,row.names = F)
+pca <- pca %>% filter(Super_REGION != 'RUS')
+write.table(pca[,c(2:16)],paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/UMAP/1000G_WGS_15_pca_exclude.txt",sep=''), sep='\t',quote = F,row.names = F)
+#UMAP
+#esse.concat.hrc_qc_duprem_all_pruned_1000G_WGS_15_pca_exclude_UMAP_PC15_NC3_NN10_MD0.001_euclidean_20221003_052303.txt
+#1000G_WGS_15_pca_exclude.txt
+umap = read.table('/humgen/atgu1/methods/dusoltsev/biobank/HRC/UMAP/1000G_WGS_15_pca_exclude_UMAP_PC15_NC3_NN10_MD0.001_euclidean_20221003_052817.txt',sep = ' ', header = F)
+umap <- cbind(umap,pca)
+
+cl1 <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/fst/esse.hrc.dr08_pruned_PLINK_CLUSTERS_61new.txt",sep = '\t', header = T)
+cl2 <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/fst/esse.hrc.dr08_pruned_PLINK_CLUSTERS_62new.txt",sep = '\t', header = T)
+cl3 <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/fst/esse.hrc.dr08_pruned_PLINK_CLUSTERS_63new.txt",sep = '\t', header = T)
+cl4 <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/fst/esse.hrc.dr08_pruned_PLINK_CLUSTERS_64new.txt",sep = '\t', header = T)
+cl5 <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/fst/esse.hrc.dr08_pruned_PLINK_CLUSTERS_65new.txt",sep = '\t', header = T)
+cl6 <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/fst/esse.hrc.dr08_pruned_PLINK_CLUSTERS_66new.txt",sep = '\t', header = T)
+
+umap <- umap %>% mutate(POP = case_when(NP %in% cl1$x ~ 'cl1',
+                                      NP %in% cl2$x ~ 'cl2',
+                                      NP %in% cl3$x ~ 'cl3',
+                                      NP %in% cl4$x ~ 'cl4',
+                                      NP %in% cl5$x ~ 'cl5',
+                                      NP %in% cl6$x ~ 'cl6'
+                                      ))
+
+umap %>% 
+  #filter(!is.na(POP)) %>%
+  ggplot(aes(V1,V2,col=SuperPopulation))+
+  geom_point()+
+  theme_classic()+
+  scale_color_manual(values = cols)+
+  scale_fill_manual(values = cols)
+
+
 
 #PCA with 1000G RUR only
 
@@ -275,7 +320,7 @@ g8 <- pca  %>% filter(!is.na(PC1)) %>%
                             REGION %in% c('TSI','IBS') ~ 'TSI_IBS',
                             REGION %in% c('CEU','GBR') ~ 'CEU_GBR',
                             TRUE ~ REGION)) %>%
-  ggplot(aes(-PC1,-PC2,col=REGION))+
+  ggplot(aes(PC1,PC2,col=REGION))+
   geom_point(alpha=0.4)+
   theme_classic()+
   scale_color_manual(values = cols)+
@@ -284,4 +329,11 @@ g8 <- pca  %>% filter(!is.na(PC1)) %>%
 
 grid.arrange(g4,g7,g8, ncol=3, nrow=1)
 
-
+write.table(pca[,c(2:11)],paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/UMAP/esse.concat.hrc_qc_duprem_all_pruned_1000G_WGS_EUR_pca_exclude.txt",sep=''), sep='\t',quote = F,row.names = F)
+#UMAP
+umap = read.table('/humgen/atgu1/methods/dusoltsev/biobank/HRC/UMAP/esse.concat.hrc_qc_duprem_all_pruned_1000G_WGS_EUR_pca_exclude_UMAP_PC10_NC3_NN10_MD0.001_euclidean_20221001_085953.txt',sep = ' ', header = F)
+umap <- cbind(umap,pca)
+umap %>%
+  ggplot(aes(V1,V2,col=REGION))+
+  geom_point()+
+  theme_classic()

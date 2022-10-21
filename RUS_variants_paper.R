@@ -157,7 +157,7 @@ d_ff_maf %>% gather(key,value,5:6) %>%
   theme_classic()
 
 cols <- c('#0072B2',"#009E73","#999999","#E69F00",'#CC79A7',"#CCCCCC", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-d_ff_maf %>% filter(FIN_NEFIN > 1.5) %>%
+d_ff_maf %>% filter(FIN_NEFIN > 2) %>%
   gather(key,value,5:6) %>%
   filter(value > -3 & value < 6) %>%
   ggplot(aes(value,col=key,fill=key))+
@@ -167,9 +167,13 @@ d_ff_maf %>% filter(FIN_NEFIN > 1.5) %>%
   scale_fill_manual(values = cols)+
   geom_vline(xintercept = 0,linetype = "longdash",size = 0.5)
 
-ddd <- d_ff_maf %>% filter(FIN_NEFIN > 1.5)
+ddd <- d_ff_maf %>% filter(FIN_NEFIN > 2)
 
-d %>% filter(RUS_NEFIN >= 1) %>%
+write.table(ddd$locus,"/humgen/atgu1/methods/dusoltsev/biobank/HRC/finnish_enriched.txt",sep='\t',quote = F,row.names = F)
+fin <-  read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/finnish_enriched_rsids.txt",sep = '\t', header = T)
+write.table(fin$RSID,"/humgen/atgu1/methods/dusoltsev/biobank/HRC/finnish_enriched_rsids.txt",sep='\t',quote = F,row.names = F)
+
+d %>% filter(RUS_NEFIN >= 2) %>%
   ggplot(aes(MAF_FIN,MAF_NEFIN))+
   geom_point()+
   theme_classic()
@@ -184,4 +188,244 @@ d_f %>%
   scale_color_manual(values = cols)+
   scale_fill_manual(values = cols)+
   geom_vline(xintercept = 0,linetype = "longdash",size = 0.5)
+
+#Finnish Enriched
+#########################################################################################################
+d_ff_maf <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_FIN_NEFIN_annotated_enriched2.txt",sep = '\t', header = T)
+colnames(d_ff_maf)[4] <- 'AF_RUS'
+colnames(d_ff_maf)[10] <- 'AF2'
+d_ff_maf <-  d_ff_maf %>% mutate(AF1 = log(AF1/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(AF2 = log(AF2/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(AF3 = log(AF3/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(AF4 = log(AF4/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(AF5 = log(AF5/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(AF6 = log(AF6/NEFIN,base=2))
+
+d_ff_maf <-  d_ff_maf %>% mutate(AF_SPB = log(AF_SPB/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(AF_ORENBURG = log(AF_ORENBURG/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(AF_SAMARA = log(AF_SAMARA/NEFIN,base=2))
+
+d_ff_maf <-  d_ff_maf %>% mutate(JEW = log(JEW/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(AFRICAN = log(AFRICAN/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(EAST_ASIAN = log(EAST_ASIAN/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(LATINO = log(LATINO/NEFIN,base=2))
+d_ff_maf <-  d_ff_maf %>% mutate(EUR_OTH = log(EUR_OTH/NEFIN,base=2))
+d_ff_maf[d_ff_maf == Inf] <- 10
+d_ff_maf[d_ff_maf == -Inf] <- -5
+
+##############################################################################################################
+
+dd <-  d_ff_maf %>% filter(FIN_NEFIN > 2) %>%
+  filter(EAST_ASIAN == -5) %>%
+  gather(key,value,7:14,21) %>% 
+  filter(value != 10 & value != -5) %>% 
+  group_by(key) %>% dplyr::summarise(N=median(value,na.rm=T))%>% arrange(desc(N)) %>% ungroup() %>%
+  mutate(key = case_when(key == 'FIN_NEFIN' ~ 'FIN',
+                         key == 'RUS_NEFIN' ~ 'RUS',
+                         key == 'AF1' ~ 'RUS_cl1',
+                         key == 'AF2' ~ 'RUS_cl2',
+                         key == 'AF3' ~ 'RUS_cl3',
+                         key == 'AF4' ~ 'RUS_cl4',
+                         key == 'AF5' ~ 'RUS_cl5',
+                         key == 'AF6' ~ 'RUS_cl6',
+                         key == 'EAST_ASIAN' ~ 'EAST_ASIAN')) %>%
+  mutate(key=factor(key,levels = c('FIN','RUS','RUS_cl1','RUS_cl2','RUS_cl3','RUS_cl4','RUS_cl5','RUS_cl6','EAST_ASIAN')))
+
+cols <- c("#999999","#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+d_ff_maf %>% filter(FIN_NEFIN > 2) %>%   
+  #filter(EAST_ASIAN != -5) %>%
+  gather(key,value,7:14,21) %>%
+  filter(value != 10 & value != -5) %>%
+  mutate(key = case_when(key == 'FIN_NEFIN' ~ 'FIN',
+                         key == 'RUS_NEFIN' ~ 'RUS',
+                         key == 'AF1' ~ 'RUS_cl1',
+                         key == 'AF2' ~ 'RUS_cl2',
+                         key == 'AF3' ~ 'RUS_cl3',
+                         key == 'AF4' ~ 'RUS_cl4',
+                         key == 'AF5' ~ 'RUS_cl5',
+                         key == 'AF6' ~ 'RUS_cl6',
+                         key == 'EAST_ASIAN' ~ 'EAST_ASIAN')) %>%
+  mutate(key=factor(key,levels = c('FIN','RUS','RUS_cl1','RUS_cl2','RUS_cl3','RUS_cl4','RUS_cl5','RUS_cl6','EAST_ASIAN'))) %>%
+  ggplot(aes(value,fill=key))+
+  geom_density(alpha=0.5)+
+  facet_wrap(~key,ncol = 1)+
+  theme_classic()+
+  scale_color_manual(values = cols)+
+  scale_fill_manual(values = cols)+
+  geom_vline(xintercept = 0,linetype = "longdash",size = 0.5)+
+  geom_vline(data = dd, aes(xintercept = N),linetype = "longdash",size = 0.25,col='red')+
+  theme(axis.text.x = element_text(angle = 90))+
+  scale_x_continuous('log2(AF/AF_NFE)')+
+  scale_y_continuous('density')+
+  theme(legend.position="none")
+
+
+d_ff_maf %>% filter(FIN_NEFIN > 2) %>%   
+  #filter(EAST_ASIAN == -5) %>%
+  gather(key,value,7:14,21) %>%
+  filter(value != 10 & value != -5) %>%
+  mutate(key = case_when(key == 'FIN_NEFIN' ~ 'FIN',
+                         key == 'RUS_NEFIN' ~ 'RUS',
+                         key == 'AF1' ~ 'RUS_cl1',
+                         key == 'AF2' ~ 'RUS_cl2',
+                         key == 'AF3' ~ 'RUS_cl3',
+                         key == 'AF4' ~ 'RUS_cl4',
+                         key == 'AF5' ~ 'RUS_cl5',
+                         key == 'AF6' ~ 'RUS_cl6',
+                         key == 'EAST_ASIAN' ~ 'EAST_ASIAN')) %>%
+  mutate(key=factor(key,levels = c('FIN','RUS','RUS_cl1','RUS_cl2','RUS_cl3','RUS_cl4','RUS_cl5','RUS_cl6','EAST_ASIAN'))) %>%
+  ggplot(aes(key,value,fill=effect))+
+  #geom_density(alpha=0.5)+
+  geom_boxplot(outlier.size=0.1)+
+  #facet_wrap(~key,ncol = 1)+
+  theme_classic()+
+  scale_color_manual(values = cols)+
+  scale_fill_manual(values = cols)+
+  #geom_vline(xintercept = 0,linetype = "longdash",size = 0.5)+
+  #geom_vline(data = dd, aes(xintercept = N),linetype = "longdash",size = 0.25,col='red')+
+  theme(axis.text.x = element_text(angle = 90))
+  #scale_x_continuous('log2(AF/AF_NFE)')+
+  #scale_y_continuous('density')+
+  theme(legend.position="none")
+#######################################################################################################
+
+#RUS enriched
+AF_log2 <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_log0_annotated.txt",sep = '\t', header = T)
+AF_log2 <- AF_log2 %>% mutate(effect = case_when(Consequence %in% c('transcript_ablation',
+                                                                    'splice_acceptor_variant',
+                                                                    'splice_donor_variant',
+                                                                    'stop_gained',
+                                                                    'frameshift_variant'
+) ~ 'PTV',
+Consequence %in% c('missense_variant') ~ 'missense',
+Consequence %in% c('synonymous_variant') ~ 'synonymous',
+TRUE ~ 'other'))
+AF_log2 <- AF_log2  %>% mutate(RUS_NEFIN = log(AF_RUS/NEFIN,base=2))
+
+genotyped_variants <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/genotyped_variants.txt",sep = '\t', header = T)
+genotyped_variants <- genotyped_variants %>% unite('locus', c('locus','alleles'),sep='_')
+
+AF_cl <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_cl_log0.txt",sep = '\t', header = T)
+AF_reg <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_REGIONS_log0.txt",sep = '\t', header = T)
+
+AF_log2_ <- AF_log2 %>% mutate(IMP = case_when(locus %in% genotyped_variants$rsid ~ 'IMP_no',
+                                               locus %!in% genotyped_variants$rsid ~ 'IMP_yes'))
+AF_log2_ <- AF_log2_ %>% filter(RUS_NEFIN >2) 
+AF_log2_ <- as.data.frame(merge(AF_log2_,AF_cl,by='locus'))
+AF_log2_ <- as.data.frame(merge(AF_log2_,AF_reg,by='locus'))
+####
+AF_log2_ <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_log2_.txt",sep = '\t', header = T)
+
+freq <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/EGDP/EGDP_rusEUR.afreq",sep = '\t', header = F)
+freq <- freq %>% dplyr::select(V2,V5)
+colnames(freq) <- c('locus','AF_EGDP')
+
+AF_log2_ <- as.data.frame(merge(AF_log2_,freq,by='locus',all.x=T))
+
+freq_block <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/ECCE_BLOCK/block_af.txt",sep = '\t', header = T)
+colnames(freq_block) <- c('locus','alleles','AF')
+freq_block <- freq_block %>% unite('locus', c('locus','alleles'),sep='_')
+freq_block$AF <- gsub('\\[|\\]','',freq_block$AF)
+freq_block <- freq_block %>% separate('AF',c('AF1','AF2'),sep=',')
+freq_block <- freq_block %>% dplyr::select(locus,AF2)
+freq_block$AF2 <- as.numeric(freq_block$AF2)
+freq_block$locus <- gsub('\\[|\\]','',freq_block$locus)
+freq_block$locus <- gsub(',|:','_',freq_block$locus)
+freq_block$AF1 <- NULL
+colnames(freq_block)[2] <- 'AF_block'
+
+AF_log2_ <- as.data.frame(merge(AF_log2_,freq_block,by='locus',all.x=T))
+AF_log2_ <- AF_log2_  %>% filter(!is.na(AF_block))
+
+AF_log2_ <- AF_log2_ %>% mutate(AF1 = log(AF1/NEFIN,base=2),
+                                AF2 = log(AF2/NEFIN,base=2),
+                                AF3 = log(AF3/NEFIN,base=2),
+                                AF4 = log(AF4/NEFIN,base=2),
+                                AF5 = log(AF5/NEFIN,base=2),
+                                AF6 = log(AF6/NEFIN,base=2),
+                                FIN = log(FIN/NEFIN,base=2),
+                                EAST_ASIAN = log(EAST_ASIAN/NEFIN,base=2))
+AF_log2_[AF_log2_ == Inf] <- 10
+AF_log2_[AF_log2_ == -Inf] <- -5
+
+
+d <- AF_log2_ %>% filter(EAST_ASIAN == -5 & AF5 == -5)
+  
+
+dd <- AF_log2_ %>% 
+  filter(EAST_ASIAN == -5) %>%
+  gather(c(3,6,12,14:19),key=key,value=value) %>%
+  filter(value != 10 & value != -5) %>% 
+  group_by(key) %>% dplyr::summarise(N=median(value,na.rm=T)) %>% drop_na() %>% arrange(desc(N)) %>% ungroup() %>%
+  mutate(key = case_when(key == 'FIN' ~ 'FIN',
+                         key == 'RUS_NEFIN' ~ 'RUS',
+                         key == 'AF1' ~ 'RUS_cl1',
+                         key == 'AF2' ~ 'RUS_cl2',
+                         key == 'AF3' ~ 'RUS_cl3',
+                         key == 'AF4' ~ 'RUS_cl4',
+                         key == 'AF5' ~ 'RUS_cl5',
+                         key == 'AF6' ~ 'RUS_cl6',
+                         key == 'EAST_ASIAN' ~ 'EAST_ASIAN')) %>%
+  mutate(key=factor(key,levels = c('FIN','RUS','RUS_cl1','RUS_cl2','RUS_cl3','RUS_cl4','RUS_cl5','RUS_cl6','EAST_ASIAN')))
+
+
+cols <- c("#999999","#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#CC79A7","#D55E00")
+AF_log2_ %>%  
+  #filter(EAST_ASIAN == -5) %>%
+  gather(c(3,6,12,14:19),key=key,value=value) %>%
+
+  mutate(key = case_when(key == 'FIN' ~ 'FIN',
+                         key == 'RUS_NEFIN' ~ 'RUS',
+                         key == 'AF1' ~ 'RUS_cl1',
+                         key == 'AF2' ~ 'RUS_cl2',
+                         key == 'AF3' ~ 'RUS_cl3',
+                         key == 'AF4' ~ 'RUS_cl4',
+                         key == 'AF5' ~ 'RUS_cl5',
+                         key == 'AF6' ~ 'RUS_cl6',
+                         key == 'EAST_ASIAN' ~ 'EAST_ASIAN')) %>%
+  mutate(key=factor(key,levels = c('FIN','RUS','RUS_cl1','RUS_cl2','RUS_cl3','RUS_cl4','RUS_cl5','RUS_cl6','EAST_ASIAN'))) %>%
+  ggplot(aes(value,fill=key))+
+  facet_wrap(~key,ncol=1)+
+  geom_density(alpha=0.5)+
+  theme_classic()+
+  scale_color_manual(values = cols)+
+  scale_fill_manual(values = cols)+
+  #theme(axis.text.x = element_text(angle = 90))+
+  geom_vline(xintercept = 0,linetype = "longdash",size = 0.5)+
+  geom_vline(data = dd, aes(xintercept = N),linetype = "longdash",size = 0.25,col='red')+
+  scale_x_continuous('log2(AF/AF_NFE)')+
+  scale_y_continuous('density')+
+  theme(legend.position="none")
+
+AF_log2_ %>%  
+  filter(EAST_ASIAN == -5) %>%
+  gather(c(3,6,12,14:19),key=key,value=value) %>%
+  
+  filter(value != 10 & value != -5) %>%
+  mutate(key = case_when(key == 'FIN' ~ 'FIN',
+                         key == 'RUS_NEFIN' ~ 'RUS',
+                         key == 'AF1' ~ 'RUS_cl1',
+                         key == 'AF2' ~ 'RUS_cl2',
+                         key == 'AF3' ~ 'RUS_cl3',
+                         key == 'AF4' ~ 'RUS_cl4',
+                         key == 'AF5' ~ 'RUS_cl5',
+                         key == 'AF6' ~ 'RUS_cl6',
+                         key == 'EAST_ASIAN' ~ 'EAST_ASIAN')) %>%
+  mutate(key=factor(key,levels = c('FIN','RUS','RUS_cl1','RUS_cl2','RUS_cl3','RUS_cl4','RUS_cl5','RUS_cl6','EAST_ASIAN'))) %>%
+  ggplot(aes(key,value,fill=effect))+
+  #geom_density(alpha=0.5)+
+  geom_boxplot(outlier.size=0.1)+
+  #facet_wrap(~key,ncol = 1)+
+  theme_classic()+
+  scale_color_manual(values = cols)+
+  scale_fill_manual(values = cols)+
+  #geom_vline(xintercept = 0,linetype = "longdash",size = 0.5)+
+  #geom_vline(data = dd, aes(xintercept = N),linetype = "longdash",size = 0.25,col='red')+
+  theme(axis.text.x = element_text(angle = 90))
+  #scale_x_continuous('log2(AF/AF_NFE)')+
+  #scale_y_continuous('density')
+  theme(legend.position="none")
+
+
 
