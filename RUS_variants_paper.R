@@ -33,9 +33,6 @@ write.table(d_f,"/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_FIN_NEFIN.tx
 
 d_f <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_FIN_NEFIN.txt",sep = '\t', header = T)
 
-jet.colors <- colorRampPalette(c("white", "#e1eeffff", "#a5ccffff", "cyan", "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
-smoothScatter(x=d_f$AF2, y=d_f$NEFIN, colramp = jet.colors, xlab="AF RUS", ylab="MAF NFE GNOMAD", nbin = 128, nrpoints=128, pch=1, cex=0.1)
-
 d_f <- d_f %>% mutate(RUS_NEFIN = log(AF2/NEFIN,base=2))
 d_ff <- d_f %>% filter(AF2> 0.01 & AF2 < 0.1)
 
@@ -53,6 +50,13 @@ d_f_maf <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/MAF_RUS_FIN_N
 d_f_maf <- d_f_maf %>% unite('locus', c('locus','alleles'),sep='_')
 d_f_maf <- d_f_maf  %>% filter(locus %!in% GNOMAD_filters$locus)
 d_f_maf <- d_f_maf %>% drop_na()
+d_f_maf$locus <- gsub(':|,','_',d_f_maf$locus)
+d_f_maf$locus <- gsub('\\[|\\]','',d_f_maf$locus)
+hwe <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUShwe10e-4.txt",sep = '\t', header = T)
+variants = read.table('/humgen/atgu1/methods/dusoltsev/biobank/HRC/variants_to_exclude.txt',sep = '\t', header = T)
+d_f_maf <- d_f_maf %>% filter(locus %!in% variants$rsid)
+d_f_maf <- d_f_maf %>% filter(locus %!in% hwe$rsid)
+
 
 fudgeit <- function(){
   xm <- get('xm', envir = parent.frame(1))
@@ -66,6 +70,7 @@ par(mar = c(5,4,4,5) + .1)
 
 
 jet.colors <- colorRampPalette(c("white", "#e1eeffff", "#a5ccffff", "cyan", "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
+#400 450
 smoothScatter(x=d_f_maf$MAF_RUS, y=d_f_maf$MAF_NEFIN, colramp = jet.colors, xlab="MAF RUS", ylab="AF NFE GNOMAD", nbin = 128, nrpoints=500, pch=1, cex=0.1)
 
 smoothScatter(x=d_f_maf$MAF_RUS, y=d_f_maf$MAF_FIN, colramp = jet.colors, xlab="MAF RUS", ylab="AF FIN GNOMAD", nbin = 128, nrpoints=500, pch=1, cex=0.1)
@@ -90,8 +95,8 @@ genotyped_variants$AF_RUS <- as.numeric(genotyped_variants$AF2)
 genotyped_variants$AF_FIN <- as.numeric(genotyped_variants$AF_FIN)
 genotyped_variants$AF_NEFIN <- as.numeric(genotyped_variants$AF_NEFIN)
 genotyped_variants <- genotyped_variants %>% mutate(MAF_RUS_NEFIN = log(MAF_RUS/MAF_NEFIN,base=2))
-
-
+genotyped_variants$locus <- gsub(':|,','_',genotyped_variants$locus)
+genotyped_variants$locus <- gsub('\\[|\\]','',genotyped_variants$locus)
 
 d_f_maf_genotyped <- d_f_maf %>% filter(locus %in% genotyped_variants$locus)
 
@@ -122,6 +127,11 @@ AC_RUS <- AC_RUS %>% mutate(AC2_group = case_when(AC2 == 0 ~ '0',
                                                   AC2 <= 80 & AC2 > 60 ~ '61-80',
                                                   AC2 <= 100 & AC2 > 20 ~ '81-100'))
 AC_RUS <- AC_RUS %>% unite('locus',c('locus','alleles'),sep='_')
+AC_RUS$locus <- gsub(':|,','_',AC_RUS$locus)
+AC_RUS$locus <- gsub('\\[|\\]','',AC_RUS$locus)
+
+AC_RUS <- AC_RUS %>% filter(locus %!in% hwe$rsid)
+
 AC_RUS <- AC_RUS %>% filter(locus %in% genotyped_variants$locus)
 AC_RUS  %>% 
   ggplot(aes(AC2_group))+
@@ -399,7 +409,7 @@ AF_log2_ %>%
   theme(legend.position="none")
 
 AF_log2_ %>%  
-  filter(EAST_ASIAN == -5) %>%
+  #filter(EAST_ASIAN == -5) %>%
   gather(c(3,6,12,14:19),key=key,value=value) %>%
   
   filter(value != 10 & value != -5) %>%
@@ -416,7 +426,7 @@ AF_log2_ %>%
   ggplot(aes(key,value,fill=effect))+
   #geom_density(alpha=0.5)+
   geom_boxplot(outlier.size=0.1)+
-  #facet_wrap(~key,ncol = 1)+
+  facet_wrap(~IMP,ncol = 1)+
   theme_classic()+
   scale_color_manual(values = cols)+
   scale_fill_manual(values = cols)+
