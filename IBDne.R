@@ -49,7 +49,7 @@ ibdNE_all <- cbind(val,low[,3])
 ibdNE_all <- cbind(ibdNE_all,up[,3])
 colnames(ibdNE_all ) <- c('GEN','key','value','LWR.95.CI','UPR.95.CI')
 
-
+cols <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 ibdNE_all %>% 
   filter(GEN<150) %>%
   filter(key %in% c('FIN','RUS')) %>%
@@ -57,4 +57,6 @@ ibdNE_all %>%
   geom_ribbon(aes(ymin=LWR.95.CI, ymax=UPR.95.CI,col=key), linetype=2, alpha=0.1)+
   geom_line()+
   theme_classic()+
-  scale_y_log10()
+  scale_y_log10()+
+  scale_color_manual(values = cols)+
+  scale_fill_manual(values = cols)
