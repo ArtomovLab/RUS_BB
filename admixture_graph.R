@@ -34,12 +34,21 @@ colnames(pop) <- c('NP','POP','CEU_GBR','FIN','CHB_CHS_JPT','AMR','CDX_KHV','IBS
 
 pop <- pop %>% filter(POP %in% c('cl1','cl2','cl3','cl4','cl5','cl6'))
 
+pca <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/esse.hrc.dr08_pruned_PLINK2_",'final',".eigenvec",sep=''),sep = '\t', header = F)
+pca <- pca[,c(2,3:12)]
+colnames(pca)[1] <- 'NP'
+pca <-  pca %>% dplyr::arrange(V3) %>% mutate(NP = as.factor(NP))
+
+pop$NP <- factor(pop$NP,levels = pca$NP)
+
+
 pop <- pop %>% gather(key,value,3:ncol(pop))
 
 
 cols <- c('#009E73','#F0E442',"#999999","#56B4E9",'#0072B2','#E69F00',"#D55E00", "#CC79A7","#000000","#66FF33")
 
-pop %>% 
+
+pop %>% mutate(NP = factor(NP,levels = pca$NP)) %>%  dplyr::arrange(NP) %>%
   #mutate(key = case_when(key %in% c('ASW','ACB','LWK','GWD','YRI','MSL','ESN') ~ 'AFR',
   #                             key %in% c('PUR','CLM','MXL','PEL') ~ 'AMR',
   #                            key %in% c('PJL','GIH','BEB','ITU','STU') ~ 'SAS',
@@ -47,7 +56,7 @@ pop %>%
   #mutate(key = factor(key,levels=c('CEU','GBR','FIN','IBS','TSI',  'CHB','JPT','CHS','CDX','KHV', 'PJL','GIH','BEB','ITU','STU', 'PUR','CLM','MXL','PEL', 'AFR' ))) %>%
   #mutate(key = factor(key,levels=c('CEU','GBR','FIN','IBS','TSI',  'CHB','JPT','CHS','CDX','KHV', 'SAS', 'AMR', 'AFR' ))) %>%
   mutate(Population = key) %>%
-  ggplot(aes(as.character(NP),value,col=Population,fill=Population))+
+  ggplot(aes(NP,value,col=Population,fill=Population))+
   geom_bar(stat='identity',pos=position_stack(reverse = FALSE))+
   facet_wrap(~POP,scales = "free_x",ncol=2,nrow=3)+
   theme_classic()+
