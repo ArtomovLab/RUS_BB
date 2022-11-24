@@ -28,8 +28,8 @@ pheno='20116_0.gwas.imputed_v3.both_sexes'
 ##python process_postgap.py -i ${POSTGAP} -o ${GPRIOR}
 ##done
 
-input='/humgen/atgu1/methods/dusoltsev/biobank/POSTGAP/SmokingCessation'
+input='/humgen/atgu1/methods/dusoltsev/biobank/POSTGAP/SMNE'
 ##python gprior.py -i ${input}/${pheno}/${pheno}_GPRIOR.tsv -ts ${input}/${pheno}_GPRIOR_train.tsv -o ${input}/${pheno}_GPRIOR_results.tsv
 
-python process_postgap.py -i ${input}/SmokingCessation_postgap.tsv -o ${input}/SmokingCessation_postgap_gprior.tsv
-python gprior.py -i ${input}/SmokingCessation_postgap_gprior.tsv -ts ${input}/SmokingCessation_train.tsv -o ${input}/SmokingCessation_gprior_results.txt
+python process_postgap.py -i ${input}/SMNE_postgap.tsv -o ${input}/SMNE_postgap_gprior.tsv
+python gprior.py -i ${input}/SMNE_postgap_gprior.tsv -ts ${input}/SMNE_train.tsv -o ${input}/SMNE_gprior_results.txt

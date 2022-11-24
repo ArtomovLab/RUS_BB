@@ -5,7 +5,7 @@ Here is list of scripts which is used for pilot study of Russian Biobank
 2. `CSQ.R` parses VEP annotation and collects the most severe effect
 3. `ECCE_gwas.sh` and ECCE_gwas.py run GWAS analysis 
 4. `ECCE_pca_paper.R` makes PCA plots
-5. `gprior.sh GPrior_paper.R` run gene prioritization
+5. `postgap.sh, postgap_unite.R, gprior.sh and GPrior_paper.R` run gene prioritization
 6. `IBD_graphs.R` makes IBD heatmap 
 7. `IBD_merge.sh` merges IBD segments
 8. `IBD_unite.R` collects agregated IBD data
