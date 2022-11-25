@@ -12,7 +12,7 @@ Here is list of scripts which is used for pilot study of Russian Biobank
 4. `1000G.sh and 1000G.py` merge Russian samples with 1000 Genomes samples and perform PCA
 5. `pca_filter.R` performs filters to Russian samples PCA
 6. `ECCE_pca_paper.R` makes PCA plots
-7. 'clustering.R` runs clustering analysis of Russian population
+7. `clustering.R` runs clustering analysis of Russian population
 
 ## **Populational structure analysis**
 
