@@ -4,7 +4,7 @@ Here is list of scripts which is used for pilot study of Russian Biobank
 ## **Quality control**
 
 1. `SEX_masmatch_paper.R` collects sex mismatch
-2. `qc_plink1.sh` perform QC for Russian samples
+2. `qc_plink1.sh` performs QC for Russian samples
 3. `relatives_paper.R` makes relatives plots
 
 ## **PCA analysis and clustering**
@@ -12,7 +12,7 @@ Here is list of scripts which is used for pilot study of Russian Biobank
 4. `1000G.sh and 1000G.py` merge Russian samples with 1000 Genomes samples and perform PCA
 5. `pca_filter.R` performs filters to Russian samples PCA
 6. `ECCE_pca_paper.R` makes PCA plots
-7. `clustering.R` runs clustering analysis of Russian population
+7. `clustering.R` runs clustering analysis of the Russian population
 
 ## **Populational structure analysis**
 
@@ -21,7 +21,7 @@ Here is list of scripts which is used for pilot study of Russian Biobank
 10. `beagle.sh` runs IBD analysis
 11. `IBD_merge.sh` merges IBD segments
 12. `IBD_unite.R` collects agregated IBD data
-13. `IBD_unite.R` collects agregated IBD data
+13. `IBD_hraphs.R` makes median IBD heatmap
 14. `admixture1.sh` runs ADMIXTURE analysis
 15. `admixture_graph.R` makes plot of ADMIXTURE analysis
 
@@ -42,6 +42,6 @@ Here is list of scripts which is used for pilot study of Russian Biobank
 25. `af.sh and af.py` collect alleles frequencies from gnomAD
 26. `clusters.py` collects allele frequencies for each Russian cluster
 27. `RUS_variants_paper.R` makes plots for Finnish and Russian enriched variants`
-28. `IBDne.sh` calculates populational size
-29. `IBDne.R` makes plot of populational size
+28. `IBDne.sh` calculates a populational size
+29. `IBDne.R` makes plot of a populational size
 30. `treemix.R, treemix.sh and treemix.py` run TreeMix analysis
