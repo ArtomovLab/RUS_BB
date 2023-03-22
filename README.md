@@ -1,4 +1,4 @@
-# **Russian Biobank paper**
+# **Russian Biobank**
 Here is list of scripts which is used for pilot study of Russian Biobank
 
 ## **Quality control**
