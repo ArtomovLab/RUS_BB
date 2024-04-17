@@ -29,3 +29,36 @@ m.shadedrelief()
 draw_map(m)
 plt.show()
 plt.savefig('map_RUS.png')
+
+
+fig = plt.figure(figsize=(20, 20))
+coord = pd.read_table('coordinates.txt',delimiter='\t')
+map = Basemap(projection='cyl',llcrnrlat=-60,urcrnrlat=90,
+            llcrnrlon=-168,urcrnrlon=192, resolution='l')
+map.drawmapboundary(fill_color='#FFFFFF')
+map.fillcontinents(color='#afe9c6ff',lake_color='#FFFFFF')
+map.drawcoastlines(linewidth=0.25, linestyle='solid',antialiased=1)
+
+
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["grey","yellow","red"])
+map.scatter(coord['lon'], coord['lat'], c=coord['IBD_mean'], s=250, cmap=cmap,marker='o',zorder=10000)
+
+#plt.legend(handles=plot.legend_elements()[0])
+plt.colorbar()
+
+plt.savefig('map_add_1000G.pdf',format = 'pdf')
+
+#for several populations coordinates were modified
+'''
+G_coord[G_coord$POP2 == 'CEU',]$lon <- 2.714358
+G_coord[G_coord$POP2 == 'CEU',]$lat <- 47.422519
+
+G_coord[G_coord$POP2 == 'STU',]$lon <- 80.71378
+G_coord[G_coord$POP2 == 'STU',]$lat <- 7.555494
+
+G_coord[G_coord$POP2 == 'ITU',]$lon <- 79.11517
+G_coord[G_coord$POP2 == 'ITU',]$lat <- 17.84959
+
+G_coord[G_coord$POP2 == 'GIH',]$lon <- 71.745263
+G_coord[G_coord$POP2 == 'GIH',]$lat <- 22.385001
+'''

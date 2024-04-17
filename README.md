@@ -6,7 +6,7 @@ List of scripts which is used in the Russian Biobank study. Preprint available a
 1. `SEX_masmatch_paper.R` collects sex mismatch
 2. `qc_plink1.sh` performs QC for Russian samples
 3. `relatives_paper.R` generates relatives plots
-4. `map.py` generates map at Fig. 1A
+4. `map.py` generates map at Fig. 1A and Sup. Fig. S14
 
 ## **PCA Analysis and Clustering**
 
