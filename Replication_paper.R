@@ -1,6 +1,16 @@
 library(ieugwasr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+AF_RUS_FIN_NEFIN_annotated_enriched2 <- 'txt file of annotated finnish enriched variants'
+enriched_phewas <- 'txt file of phewas for finnish enriched variants'
+
 res <- data.frame(matrix(ncol=12,nrow=0))
 colnames(res) <- c('n','chr','position','se' ,'beta', 'p', 'id','rsid','ea','nea','eaf','trait')
+
+d_ff_maf <- read.table(AF_RUS_FIN_NEFIN_annotated_enriched2,sep = '\t', header = T)
 
 d_ff_maf_ <- d_ff_maf %>% filter(AF_RUS > 0.01 & AF_RUS < 0.99)
 d_ff_maf_ <- d_ff_maf_  %>% separate('locus',c('CHROM','POS','REF','ALT'),sep='_')
@@ -18,10 +28,10 @@ for (i in  seq(from = 1,to = length(unique(d_ff_maf_$locus)), by = 100)) {
   print(c(unique(fin$locus)[i],i))
   res <- rbind(res,d)
 }
-write.table(res,"/humgen/atgu1/methods/dusoltsev/biobank/HRC/matrix_merge_finnish_enriched_phewas_NEW.txt", sep='\t',quote = F,row.names = F)
+write.table(res,enriched_phewas, sep='\t',quote = F,row.names = F)
 
-fin_phewas <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/matrix_merge_finnish_enriched_phewas.txt",sep = '\t', header = T,quote="")
-write.table(unique(fin_phewas$trait),"/humgen/atgu1/methods/dusoltsev/biobank/HRC/matrix_merge_finnish_enriched_phenos_phewas.txt", sep='\t',quote = F,row.names = F)
+fin_phewas <- read.table(enriched_phewas,sep = '\t', header = T,quote="")
+write.table(unique(fin_phewas$trait),paste(enriched_phewas,"phenos",sep='_'), sep='\t',quote = F,row.names = F)
 length(unique(fin_phewas$trait))
 length(unique(fin_phewas$rsid))
 fin_phewas$trait <- gsub('"','',fin_phewas$trait)
@@ -173,7 +183,7 @@ fin_phewas <-  fin_phewas %>% mutate(id = case_when(trait %in% c( 'Diabetes mell
 all_rus <- unique(fin_phewas$rsid)
 
 for (i in unique(fin_phewas$id)) {
-  write.table(fin_phewas %>% filter(id == i),paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/matrix_merge_finnish_enriched_phenos_phewas_filtered_",i,".txt",sep=''), sep='\t',quote = F,row.names = F)
+  write.table(fin_phewas %>% filter(id == i),paste(enriched_phewas,i,".txt",sep=''), sep='\t',quote = F,row.names = F)
 }
 
 
@@ -182,15 +192,14 @@ library('TwoSampleMR')
 
 for (i in unique(fin_phewas$id)) {
   if (i == "Diabetes") {
-    #i='Diabetes'
-    exposure <- read_exposure_data(paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/matrix_merge_finnish_enriched_phenos_phewas_filtered_",i,".txt",sep=''),
+    exposure <- read_exposure_data(paste(enriched_phewas,i,".txt",sep=''),
                                    snp_col='rsid',beta_col='beta',se_col='se',eaf_col='eaf',effect_allele_col='ea',
                                    other_allele_col='nea',	pval_col='p',sep= '\t')
     exposure <- clump_data(exposure,clump_kb = 10000,clump_r2 = 0.1, pop = "EUR")
   }
   else 
   {
-    exposure_A <- read_exposure_data(paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/matrix_merge_finnish_enriched_phenos_phewas_filtered_",i,".txt",sep=''),
+    exposure_A <- read_exposure_data(paste(enriched_phewas,i,".txt",sep=''),
                                      snp_col='rsid',beta_col='beta',se_col='se',eaf_col='eaf',effect_allele_col='ea',
                                      other_allele_col='nea',	pval_col='p',sep= '\t')
     exposure_A <- clump_data(exposure_A,clump_kb = 10000,clump_r2 = 0.1, pop = "EUR")
@@ -206,7 +215,7 @@ fin_phewas_clumped <- fin_phewas_clumped %>% separate('id_rsid',c('id','rsid'),s
 unique(fin_phewas_clumped$rsid)
 unique(fin_phewas_clumped$id)
 
-write.table(fin_phewas,"/humgen/atgu1/methods/dusoltsev/biobank/HRC/matrix_merge_finnish_enriched_phenos_phewas_filtered_clumped.txt", sep='\t',quote = F,row.names = F)
+write.table(fin_phewas,paste(enriched_phewas,"phenos_clumped",sep='_'), sep='\t',quote = F,row.names = F)
 
 qqman::manhattan(fin_phewas_clumped,chr = "chr", bp = "position", p = "p", snp = "rsid",
                  suggestiveline = -log10(5e-8), genomewideline =-log10(5e-8),
@@ -215,8 +224,6 @@ qqman::manhattan(fin_phewas_clumped,chr = "chr", bp = "position", p = "p", snp =
 
 length(table(fin_phewas$id))
 
-
-#fin_phewas_rus1 <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/matrix_merge_finnish_enriched_phenos_phewas_filtered_clumped_RUS.txt",sep = '\t', header = T,quote="")
 
 fin_phewas_rus <- fin_phewas_clumped
 fin_phewas_rus$p_RUS <- NA

@@ -1,52 +1,37 @@
 #! /bin/bash
 
-#$ -cwd
-#$ -N fst
-#$ -l h_vmem=16G
-#$ -q broad
-#$ -t 1-29
-#$ -tc 29
-#$ -l h_rt=24:00:00
-#$ -o fst.out
-#$ -e fst.err
-#$ -pe smp 1
-#$ -binding linear:1
-
-source /broad/software/scripts/useuse
-use Tabix
-use VCFtools
-
-POPs="/humgen/atgu1/methods/dusoltsev/biobank/HRC/fst/fst_ALL.txt"
-TARGET="/humgen/atgu1/methods/dusoltsev/biobank/HRC/esse.concat.hrc_qc_duprem_all_pruned_1000G_WGS.vcf.bgz"
+POPs="txt file with populations"
+TARGET="pruned vcf file esse + 1000 Genomes"
+relatives="IDs of esse relatives txt file"
 
 OUT='regions_WGS_pruned'
 
-id=${SGE_TASK_ID}
+id=$1
 
 POP=$(sed "${id}q;d" ${POPs})
 
 vcftools --gzvcf  $TARGET \
 --weir-fst-pop samples_WGS_SAMARA.txt \
 --weir-fst-pop samples_WGS_${POP}.txt \
---remove /humgen/atgu1/methods/dusoltsev/biobank/HRC/plink2.king.cutoff.out1.id
+--remove ${relatives}
 --out ${OUT}/SAMARA_${POP}
 
 vcftools --gzvcf  $TARGET \
 --weir-fst-pop samples_WGS_SPB.txt \
 --weir-fst-pop samples_WGS_${POP}.txt \
---remove /humgen/atgu1/methods/dusoltsev/biobank/HRC/plink2.king.cutoff.out1.id
+--remove ${relatives}
 --out ${OUT}/SPB_${POP}
 
 vcftools --gzvcf  $TARGET \
 --weir-fst-pop samples_WGS_ORENBURG.txt \
 --weir-fst-pop samples_WGS_${POP}.txt \
---remove /humgen/atgu1/methods/dusoltsev/biobank/HRC/plink2.king.cutoff.out1.id
+--remove ${relatives}
 --out ${OUT}/ORENBURG_${POP}
 
 vcftools --gzvcf  $TARGET \
 --weir-fst-pop samples_WGS_RUS.txt \
 --weir-fst-pop samples_WGS_${POP}.txt \
---remove /humgen/atgu1/methods/dusoltsev/biobank/HRC/plink2.king.cutoff.out1.id
+--remove ${relatives}
 --out ${OUT}/RUS_${POP}
 
 N=6
@@ -56,5 +41,5 @@ vcftools --gzvcf  $TARGET \
 --weir-fst-pop samples_WGS_cl${i}.txt \
 --weir-fst-pop samples_WGS_${POP}.txt \
 --out ${OUT}/cl${i}_${POP} 
---remove /humgen/atgu1/methods/dusoltsev/biobank/HRC/plink2.king.cutoff.out1.id 
+--remove ${relatives} 
 done

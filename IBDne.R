@@ -1,12 +1,17 @@
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+ibdNE_file = 'file with ibdNE results'
 
 for (i in c('RUS','CEU_GBR','IBS_TSI','ORENBURG','SAMARA','SPB','cl1','cl2','cl3','cl4','cl5','cl6','ASW','ACB','LWK','GWD','YRI','MSL','ESN','PUR','CLM','MXL','PEL','PJL','GIH','BEB','ITU','STU','CHB','JPT','CHS','CDX','KHV','CEU','GBR','FIN','IBS','TSI')) {
   if (i == 'RUS') {
-    ibdNE_all <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/ibdNE/IBD_1000G_genotype_merge2_",i,".ne",sep=''),sep = '\t', header = T)
+    ibdNE_all <- read.table(paste(ibdNE_file,i,".ne",sep=''),sep = '\t', header = T)
     ibdNE_all <- ibdNE_all %>% dplyr::select(GEN,NE)
   }
   else {
-    i='FIN'
-    ibdNE <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/ibdNE/IBD_1000G_genotype_merge2_",i,".ne",sep=''),sep = '\t', header = T)
+    ibdNE <- read.table(paste(ibdNE_file,i,".ne",sep=''),sep = '\t', header = T)
     ibdNE <- ibdNE %>% dplyr::select(GEN,NE)
     ibdNE_all <- as.data.frame(merge(ibdNE_all,ibdNE,by='GEN'))
   }
@@ -17,12 +22,12 @@ val <- ibdNE_all %>% gather(key,value,2:39)
 
 for (i in c('RUS','CEU_GBR','IBS_TSI','ORENBURG','SAMARA','SPB','cl1','cl2','cl3','cl4','cl5','cl6','ASW','ACB','LWK','GWD','YRI','MSL','ESN','PUR','CLM','MXL','PEL','PJL','GIH','BEB','ITU','STU','CHB','JPT','CHS','CDX','KHV','CEU','GBR','FIN','IBS','TSI')) {
   if (i == 'RUS') {
-    ibdNE_all <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/ibdNE/IBD_1000G_genotype_merge2_",i,".ne",sep=''),sep = '\t', header = T)
+    ibdNE_all <- read.table(paste(ibdNE_file,i,".ne",sep=''),sep = '\t', header = T)
     ibdNE_all <- ibdNE_all %>% dplyr::select(GEN,LWR.95.CI)
   }
   else {
     i='FIN'
-    ibdNE <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/ibdNE/IBD_1000G_genotype_merge2_",i,".ne",sep=''),sep = '\t', header = T)
+    ibdNE <- read.table(paste(ibdNE_file,i,".ne",sep=''),sep = '\t', header = T)
     ibdNE <- ibdNE %>% dplyr::select(GEN,LWR.95.CI)
     ibdNE_all <- as.data.frame(merge(ibdNE_all,ibdNE,by='GEN'))
   }
@@ -32,12 +37,12 @@ low <- ibdNE_all %>% gather(key,value,2:39)
 
 for (i in c('RUS','CEU_GBR','IBS_TSI','ORENBURG','SAMARA','SPB','cl1','cl2','cl3','cl4','cl5','cl6','ASW','ACB','LWK','GWD','YRI','MSL','ESN','PUR','CLM','MXL','PEL','PJL','GIH','BEB','ITU','STU','CHB','JPT','CHS','CDX','KHV','CEU','GBR','FIN','IBS','TSI')) {
   if (i == 'RUS') {
-    ibdNE_all <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/ibdNE/IBD_1000G_genotype_merge2_",i,".ne",sep=''),sep = '\t', header = T)
+    ibdNE_all <- read.table(paste(ibdNE_file,i,".ne",sep=''),sep = '\t', header = T)
     ibdNE_all <- ibdNE_all %>% dplyr::select(GEN,UPR.95.CI)
   }
   else {
     i='FIN'
-    ibdNE <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/HRC/ibdNE/IBD_1000G_genotype_merge2_",i,".ne",sep=''),sep = '\t', header = T)
+    ibdNE <- read.table(paste(ibdNE_file,i,".ne",sep=''),sep = '\t', header = T)
     ibdNE <- ibdNE %>% dplyr::select(GEN,UPR.95.CI)
     ibdNE_all <- as.data.frame(merge(ibdNE_all,ibdNE,by='GEN'))
   }

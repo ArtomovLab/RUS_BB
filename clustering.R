@@ -1,6 +1,12 @@
 library(SVDFunctions)
 library(mclust)
-pca <- read.table("esse.hrc.dr08_pruned_PLINK2_final.eigenvec",sep = '\t', header = F)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+pca_without_outliers = 'PCA esse without outliers txt file'
+
+pca <- read.table(pca_without_outliers,sep = '\t', header = F)
 row.names(pca) <- pca$V2
 pca <- pca[,3:12]
 colnames(pca) <- c('PC1','PC2','PC3','PC4','PC5','PC6','PC7','PC8','PC9','PC10')
@@ -18,7 +24,7 @@ table(as.character(caseCl$samples))
 
 caseCl <- mergeCluster(caseCl, cluster = 5) 
 
-pca <- read.table("esse.hrc.dr08_pruned_PLINK2_final.eigenvec",sep = '\t', header = F)
+pca <- read.table(pca_without_outliers,sep = '\t', header = F)
 pca$CLUSTER <- caseCl$samples
 pca <- pca %>% mutate(CLUSTER = case_when(CLUSTER == 5 ~ 1,
                                           CLUSTER == 1 ~ 2,
@@ -37,9 +43,9 @@ pca %>%
 
 
 table(pca$CLUSTER)
-write.table(pca, 'esse.hrc.dr08_pruned_PLINK_CLUSTERS6_new.eigenvec',sep='\t', row.names=FALSE, quote=F)
+write.table(pca,'clusters.txt',sep='\t', row.names=FALSE, quote=F)
 for (i in 1:length(unique(pca$CLUSTER))) {
   p <- pca %>% filter(CLUSTER == i)
-  write.table(p[,2], paste('-РФ/esse.hrc.dr08_pruned_PLINK_CLUSTERS_6',i,'new.txt',sep=''),sep='\t', row.names=FALSE, quote=F)  
+  write.table(p[,2], paste('cluster',i,'.txt',sep=''),sep='\t', row.names=FALSE, quote=F)
 }
 

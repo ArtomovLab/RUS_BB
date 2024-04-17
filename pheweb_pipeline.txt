@@ -15,5 +15,5 @@ pheweb gather-pvalues-for-each-gene
 pheweb top-hits
 pheweb phenotypes
 
-nextlow /mnt/tank/scratch/dusolcev/programms/pheweb-rg-pipeline/LDSC/LDSC.ns
+nextlow LDSC.ns
 pheweb pheno-correlation

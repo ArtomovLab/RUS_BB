@@ -1,6 +1,16 @@
+library(tidyr)
+library(dplyr)
+library(ggplot2)
 
 #SMOKING never
-SMOKING <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/ukbb/SMOKING.txt",sep=''),sep = '\t', header = T,quote = '"')
+SMOKING <- 'list of genes from GWAS catalog for Smoking Initiation phenotype'
+SMNE_train <- 'list of genes to train GPrior Smoking Initiation'
+SMNE_gprior <- 'GPrior results for Smoking Initiation phenotype'
+SMOKING_ever <- 'list of genes from GWAS catalog for Smoking Cessation phenotype'
+SmokingCessation_train <- 'list of genes to train GPrior Smoking Cessation'
+SmokingCessation_train_gprior <- 'GPrior results for Smoking Cessation phenotype'
+
+SMOKING <- read.table(paste(SMOKING,sep=''),sep = '\t', header = T,quote = '"')
 SMOKING <- SMOKING %>% separate('P.value', c('P.value1','P.value2'), sep= 'x')
 SMOKING <- SMOKING %>% separate('P.value2', c('P.value2','P.value3'), sep= '-')
 SMOKING$P.value1 <- as.numeric(SMOKING$P.value1)
@@ -15,9 +25,9 @@ SMOKING <- SMOKING %>% filter(P.value < 1e-6)
 SMOKING <- SMOKING %>% filter(Reported.trait %in% c('Smoking initiation (ever regular vs never regular)'))
 SMOKING <- as.data.frame(unique(SMOKING$Mapped.gene))
 colnames(SMOKING) <- 'gene_symbol'
-write.table(SMOKING,paste("/humgen/atgu1/methods/dusoltsev/biobank/POSTGAP/SMNE/SMNE_train.tsv"),sep='\t',quote = F,row.names = F)
+write.table(SMOKING,paste(SMNE_train),sep='\t',quote = F,row.names = F)
 
-GPrior_res <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/POSTGAP/SMNE/SMNE_gprior_results.txt",sep=''),sep = '\t', header = T)
+GPrior_res <- read.table(paste(SMNE_gprior,sep=''),sep = '\t', header = T)
 df2 <- GPrior_res %>%  gather(key,value,2:7) %>%
   filter(gene_symbol == 'PTK2')
 
@@ -30,7 +40,7 @@ GPrior_res %>% gather(key,value,2:7) %>%
   geom_vline(data = df2, mapping = aes(xintercept = value)) 
 
 ##SMOKING Ever
-SMOKING <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/POSTGAP/SmokingCessation/efotraits_EFO_0004319-associations-2022-06-21.csv",sep=''),sep = ',', header = T,quote = '"')
+SMOKING <- read.table(paste(SMOKING_ever,sep=''),sep = ',', header = T,quote = '"')
 SMOKING <- SMOKING %>% separate('P.value', c('P.value1','P.value2'), sep= 'x')
 SMOKING <- SMOKING %>% separate('P.value2', c('P.value2','P.value3'), sep= '-')
 SMOKING$P.value1 <- as.numeric(SMOKING$P.value1)
@@ -46,9 +56,9 @@ SMOKING <- SMOKING %>% filter(P.value < 1e-6)
 SMOKING <- SMOKING %>% filter(Reported.trait %in% c('Smoking cessation'))
 SMOKING <- as.data.frame(unique(SMOKING$Mapped.gene))
 colnames(SMOKING) <- 'gene_symbol'
-write.table(SMOKING,paste("/humgen/atgu1/methods/dusoltsev/biobank/POSTGAP/SmokingCessation/SmokingCessation_train.tsv"),sep='\t',quote = F,row.names = F)
+write.table(SMOKING,paste(SmokingCessation_train),sep='\t',quote = F,row.names = F)
 
-GPrior_res <- read.table(paste("/humgen/atgu1/methods/dusoltsev/biobank/POSTGAP/SmokingCessation/SmokingCessation_gprior_results.txt",sep=''),sep = '\t', header = T)
+GPrior_res <- read.table(paste(SmokingCessation_train_gprior,sep=''),sep = '\t', header = T)
 df2 <- GPrior_res %>%  gather(key,value,2:7) %>%
   filter(gene_symbol == 'ACSM4')
 

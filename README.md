@@ -1,47 +1,49 @@
-# **Russian Biobank**
-Here is list of scripts which is used for pilot study of Russian Biobank
+# **Russian Biobank paper**
+List of scripts which is used in the Russian Biobank study. Preprint available at (https://www.biorxiv.org/content/10.1101/2023.03.23.534000v1)
 
-## **Quality control**
+## **Quality Control**
 
 1. `SEX_masmatch_paper.R` collects sex mismatch
 2. `qc_plink1.sh` performs QC for Russian samples
-3. `relatives_paper.R` makes relatives plots
+3. `relatives_paper.R` generates relatives plots
+4. `map.py` generates map at Fig. 1A
 
-## **PCA analysis and clustering**
+## **PCA Analysis and Clustering**
 
-4. `1000G.sh and 1000G.py` merge Russian samples with 1000 Genomes samples and perform PCA
-5. `pca_filter.R` performs filters to Russian samples PCA
-6. `ECCE_pca_paper.R` makes PCA plots
-7. `clustering.R` runs clustering analysis of the Russian population
+5. `1000G.py` merges Russian samples with 1000 Genomes samples and performs PCA
+6. `pca_filter.R` performs filters to Russian samples PCA
+7. `ECCE_pca_paper.R` creats PCA plots
+8. `clustering.R` runs clustering analysis of the Russian population
 
-## **Populational structure analysis**
+## **Populational Structure Analysis**
 
-8. `fst.sh` runs Fst analysis
-9. `fst_plot_paper.R` makes Fst plots
-10. `beagle.sh` runs IBD analysis
-11. `IBD_merge.sh` merges IBD segments
-12. `IBD_unite.R` collects agregated IBD data
-13. `IBD_hraphs.R` makes median IBD heatmap
-14. `admixture1.sh` runs ADMIXTURE analysis
-15. `admixture_graph.R` makes plot of ADMIXTURE analysis
+9. `fst.sh` runs Fst analysis
+10. `fst_plot_paper.R` generates Fst plots
+11. `beagle.sh` runs IBD analysis
+12. `IBD_merge.sh` merges IBD segments
+13. `IBD_unite.R` collects agregated IBD data
+14. `IBD_graphs.R` creates median IBD heatmap
+15. `admixture1.sh` runs ADMIXTURE analysis
+16. `admixture_graph.R` generates plot of ADMIXTURE analysis
 
-## **GWAS and construction PheWeb database**
+## **GWAS and Construction PheWeb database**
 
-16. `ECCE_gwas.sh` and ECCE_gwas.py run GWAS analysis
-17. `pheweb.sh` reformats summary statistics for PheWeb
-18. `pheweb_pipline.txt` list of steps for running PheWeb
-19. `vep.parse.sh and vep.sh` run VEP analysis
-20. `CSQ.R` parses VEP annotation and collects the most severe effect
-21. `pheweb.R` merges VEP and PheWeb annotations
-22. `LDSC.nf` calculates genetic correlations for pheweb platform (modified from https://github.com/statgen/pheweb-rg-pipeline) 
-23. `postgap.sh, postgap_unite.R, gprior.sh and GPrior_paper.R` run gene prioritization
-24. `Replication_paper.R` collects Finnish PheWas for Finnish enriched variants
+17. `ECCE_gwas.py` runs GWAS analysis
+18. `pheweb.sh` reformats summary statistics for PheWeb
+19. `pheweb_pipline.txt` lists steps for running PheWeb
+20. `vep.parse.sh and vep.sh` run VEP analysis
+21. `CSQ.R` parses VEP annotation and collects the most severe effect
+22. `pheweb.R` merges VEP and PheWeb annotations
+23. `LDSC.nf` calculates genetic correlations for pheweb platform (modified from https://github.com/statgen/pheweb-rg-pipeline) 
+24. `postgap.sh, postgap_unite.R, gprior.sh and GPrior_paper.R` run gene prioritization
+25. `Replication_paper.R` collects Finnish PheWas for Finnish enriched variants
 
 ## **Finnish and Russian Enriched variants**
 
-25. `af.sh and af.py` collect alleles frequencies from gnomAD
-26. `clusters.py` collects allele frequencies for each Russian cluster
-27. `RUS_variants_paper.R` makes plots for Finnish and Russian enriched variants`
-28. `IBDne.sh` calculates a populational size
-29. `IBDne.R` makes plot of a populational size
-30. `treemix.R, treemix.sh and treemix.py` run TreeMix analysis
+26. `af.py` collect alleles frequencies from gnomAD
+27. `clusters.py` collects allele frequencies for each Russian cluster
+28. `RUS_variants_paper.R` generates plots for Finnish and Russian enriched variants`
+29. `IBDne.sh` calculates a populational size
+30. `IBDne.R` generates a plot of a populational size
+31. `HGDP_EGDP.py` runs PCA for 1000G, HGDP, EGDP, Russians dataset
+32. `treemix.R, treemix.sh and treemix.py` run TreeMix analysis

@@ -1,26 +1,10 @@
-#$ -l h_vmem=16G
-#$ -pe smp 1
-#$ -binding linear:1
-#$ -l h_rt=72:00:00
-#$ -o pheweb.out
-#$ -e pheweb.err
-#$ -cwd
-#$ -N pheweb
-#$ -t 1:1
-#$ -tc 1
+#!/bin/bash
 
-source /broad/software/scripts/useuse
-export PATH=/humgen/atgu1/methods/dusoltsev/programms/postgap_libs/bin:$PATH
-use Anaconda3
+input='path to gwas results'
+output='output folder'
+data='txt file with list of phenotypes'
 
-python /humgen/atgu1/methods/dusoltsev/biobank/HRC/pheweb_data/pheno_creation.py
-
-input='/humgen/atgu1/methods/dusoltsev/biobank/HRC/gwas_results_all'
-output='/humgen/atgu1/methods/dusoltsev/biobank/HRC/pheweb_data/data'
-data='/humgen/atgu1/methods/dusoltsev/biobank/HRC/pheno/pheweb.txt'
-
-
-id=${SGE_TASK_ID}
+id=$1
 
 gwas=$(sed "${id}q;d" ${data})
 

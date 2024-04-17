@@ -1,6 +1,7 @@
 library(magrittr)
-inputFile <- "/humgen/atgu1/methods/dusoltsev/biobank/new_ecce/vep/ESSE.HRC.vep_annotated_37.vcf"
-outputFile <- "/humgen/atgu1/methods/dusoltsev/biobank/new_ecce/vep/ESSE.HRC.vep_annotated_37_CSQ"
+inputFile <- "input vcf file annotated by VEP"
+outputFile <- "parsed output table"
+
 ##annotation rating
 annotationRanking <-
   c(

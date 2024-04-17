@@ -3,19 +3,35 @@ library(tidyr)
 library(ggplot2)
 '%!in%' <- function(x,y)!('%in%'(x,y))
 
-AF_RUS <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS.txt",sep = '\t', header = T)
+AF_RUS_file <- 'txt file of Russian AFs for all variants in the Russian dataset' 
+ANNOTATION_GNOMAD_filters <- 'txt file with all variants from gnomAD that do not pass filters'
+ANNOTATION_FREQ <- 'txt file with FIN and NEFIN AFs for all variants in the Russian dataset'
+MAF_RUS_FIN_NEFIN <- 'txt file with Russian MAFs for all variants in the Russian dataset'
+AF_RUShwe104 <- 'txt file with Russian variants that do not pass AF and HWE filters'
+variants_to_exclude <- 'txt file with Russian variants that were excluded additionally'
+genotyped_variants <- 'txt file with only genotyped Russian variants'
+AC_AF001 <- 'txt file of variants with low allele counts'
+finnish_enriched_rsids <- 'txt file with rsids for finnish enriched variants'
+AF_RUS_FIN_NEFIN_annotated_enriched2 <- 'txt file with annotated finnish enriched variants'
+AF_log0_annotated <- 'txt file with annotated Russian enriched variants'
+AF_RUS_cl_log0 <- 'txt file with Russian AFs in different clusters'
+AF_RUS_REGIONS_log0 <- 'txt file with Russian AFs in different regions'
+EGDP_rusEUR <- 'txt file with Russian AFs in EGDP data'
+block_af <- 'txt file with AFs for additional Russian dataset'
+
+AF_RUS <- read.table(AF_RUS_file,sep = '\t', header = T)
 AF_RUS <- AF_RUS %>% unite('locus', c('locus','alleles'),sep='_')
 AF_RUS$AF <- gsub('\\[|\\]','',AF_RUS$AF)
 AF_RUS <- AF_RUS %>% separate('AF',c('AF1','AF2'),sep=',')
 AF_RUS <- AF_RUS %>% dplyr::select(locus,AF2)
 AF_RUS$AF2 <- as.numeric(AF_RUS$AF2)
 
-GNOMAD_filters <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/ANNOTATION_GNOMAD_filters.txt",sep = '\t', header = T)
+GNOMAD_filters <- read.table(ANNOTATION_GNOMAD_filters,sep = '\t', header = T)
 GNOMAD_filters <- GNOMAD_filters %>% unite('locus', c('locus','alleles'),sep='_')
 
 AF_RUS <- AF_RUS %>% filter(locus %!in% GNOMAD_filters$locus)
 
-FIN_NEFIN <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/ANNOTATION_FREQ.txt",sep = '\t', header = T)
+FIN_NEFIN <- read.table(ANNOTATION_FREQ,sep = '\t', header = T)
 FIN_NEFIN <- FIN_NEFIN %>% unite('locus', c('locus','alleles'),sep='_')
 
 dd_f <- AF_RUS %>% filter(locus %in% FIN_NEFIN$locus) 
@@ -28,10 +44,10 @@ d_f$locus <- gsub('\\[|\\]','',d_f$locus)
 d_f$locus <- gsub('\\,','_',d_f$locus)
 d_f$locus <- gsub('\\:','_',d_f$locus)
 
-write.table(d_f,"/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_FIN_NEFIN.txt", sep='\t',quote = F,row.names = F)
+write.table(d_f,AF_RUS_FIN_NEFIN, sep='\t',quote = F,row.names = F)
 ###############################################################################################################################
 
-d_f <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_FIN_NEFIN.txt",sep = '\t', header = T)
+d_f <- read.table(AF_RUS_FIN_NEFIN,sep = '\t', header = T)
 
 d_f <- d_f %>% mutate(RUS_NEFIN = log(AF2/NEFIN,base=2))
 d_ff <- d_f %>% filter(AF2> 0.01 & AF2 < 0.1)
@@ -45,15 +61,14 @@ d_ff %>%
   scale_fill_manual(values = cols)+
   geom_vline(xintercept = 0,linetype = "longdash",size = 0.5)
 
-
-d_f_maf <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/MAF_RUS_FIN_NEFIN.txt",sep = '\t', header = T)
+d_f_maf <- read.table(MAF_RUS_FIN_NEFIN,sep = '\t', header = T)
 d_f_maf <- d_f_maf %>% unite('locus', c('locus','alleles'),sep='_')
 d_f_maf <- d_f_maf  %>% filter(locus %!in% GNOMAD_filters$locus)
 d_f_maf <- d_f_maf %>% drop_na()
 d_f_maf$locus <- gsub(':|,','_',d_f_maf$locus)
 d_f_maf$locus <- gsub('\\[|\\]','',d_f_maf$locus)
-hwe <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUShwe10e-4.txt",sep = '\t', header = T)
-variants = read.table('/humgen/atgu1/methods/dusoltsev/biobank/HRC/variants_to_exclude.txt',sep = '\t', header = T)
+hwe <- read.table(AF_RUShwe104,sep = '\t', header = T)
+variants = read.table(variants_to_exclude,sep = '\t', header = T)
 d_f_maf <- d_f_maf %>% filter(locus %!in% variants$rsid)
 d_f_maf <- d_f_maf %>% filter(locus %!in% hwe$rsid)
 
@@ -81,10 +96,10 @@ g1 <- d_f_maf  %>%
   theme_classic()
 
 
-genotyped_variants <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/genotyped_variants.txt",sep = '\t', header = T)
+genotyped_variants <- read.table(genotyped_variants,sep = '\t', header = T)
 genotyped_variants <- genotyped_variants %>% unite('locus', c('locus','alleles'),sep='_')
 genotyped_variants <- genotyped_variants %>% filter(locus %!in% GNOMAD_filters$locus)
-variants = read.table('/humgen/atgu1/methods/dusoltsev/biobank/HRC/variants_to_exclude.txt',sep = '\t', header = T)
+variants = read.table(variants_to_exclude,sep = '\t', header = T)
 genotyped_variants <- genotyped_variants %>% filter(rsid %!in% variants$rsid)
 genotyped_variants <- genotyped_variants %>% separate('AF',c('RSID','AF_FIN','AF_NEFIN'),sep=',')
 genotyped_variants <- genotyped_variants %>% separate('variant_qc',c('AC1','AC2','AF1','AF2'),sep=',')
@@ -113,7 +128,7 @@ smoothScatter(x=d_f_maf_genotyped$MAF_RUS, y=d_f_maf_genotyped$MAF_FIN, colramp 
 
 
 
-AC_RUS <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AC_AF001.txt",sep = '\t', header = T)
+AC_RUS <- read.table(AC_AF001,sep = '\t', header = T)
 AC_RUS$AC <- gsub('\\[|\\]','',AC_RUS$AC)
 AC_RUS <- AC_RUS %>% separate('AC',c('AC1','AC2'),sep=',')
 AC_RUS$AC1 <- as.numeric(AC_RUS$AC1)
@@ -142,8 +157,8 @@ AC_RUS  %>%
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1))
 
 ##################################################################
-d_f_maf <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_FIN_NEFIN.txt",sep = '\t', header = T)
-hwe <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUShwe10e-4.txt",sep = '\t', header = T)
+d_f_maf <- read.table(AF_RUS_FIN_NEFIN,sep = '\t', header = T)
+hwe <- read.table(AF_RUShwe104,sep = '\t', header = T)
 d_f_maf <- d_f_maf %>% filter(locus %!in% hwe$rsid)
 
 d_f_maf <- d_f_maf %>% mutate(RUS_NEFIN = log(AF2/NEFIN,base=2))
@@ -179,9 +194,8 @@ d_ff_maf %>% filter(FIN_NEFIN > 2) %>%
 
 ddd <- d_ff_maf %>% filter(FIN_NEFIN > 2)
 
-write.table(ddd$locus,"/humgen/atgu1/methods/dusoltsev/biobank/HRC/finnish_enriched.txt",sep='\t',quote = F,row.names = F)
-fin <-  read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/finnish_enriched_rsids.txt",sep = '\t', header = T)
-write.table(fin$RSID,"/humgen/atgu1/methods/dusoltsev/biobank/HRC/finnish_enriched_rsids.txt",sep='\t',quote = F,row.names = F)
+write.table(ddd$locus,finnish_enriched,sep='\t',quote = F,row.names = F)
+fin <-  read.table(finnish_enriched_rsids,sep = '\t', header = T)
 
 d %>% filter(RUS_NEFIN >= 2) %>%
   ggplot(aes(MAF_FIN,MAF_NEFIN))+
@@ -201,7 +215,7 @@ d_f %>%
 
 #Finnish Enriched
 #########################################################################################################
-d_ff_maf <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_FIN_NEFIN_annotated_enriched2.txt",sep = '\t', header = T)
+d_ff_maf <- read.table(AF_RUS_FIN_NEFIN_annotated_enriched2,sep = '\t', header = T)
 colnames(d_ff_maf)[4] <- 'AF_RUS'
 colnames(d_ff_maf)[10] <- 'AF2'
 d_ff_maf <-  d_ff_maf %>% mutate(AF1 = log(AF1/NEFIN,base=2))
@@ -301,7 +315,7 @@ d_ff_maf %>% filter(FIN_NEFIN > 2) %>%
 #######################################################################################################
 
 #RUS enriched
-AF_log2 <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_log0_annotated.txt",sep = '\t', header = T)
+AF_log2 <- read.table(AF_log0_annotated,sep = '\t', header = T)
 AF_log2 <- AF_log2 %>% mutate(effect = case_when(Consequence %in% c('transcript_ablation',
                                                                     'splice_acceptor_variant',
                                                                     'splice_donor_variant',
@@ -313,11 +327,11 @@ Consequence %in% c('synonymous_variant') ~ 'synonymous',
 TRUE ~ 'other'))
 AF_log2 <- AF_log2  %>% mutate(RUS_NEFIN = log(AF_RUS/NEFIN,base=2))
 
-genotyped_variants <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/genotyped_variants.txt",sep = '\t', header = T)
+genotyped_variants <- read.table(genotyped_variants,sep = '\t', header = T)
 genotyped_variants <- genotyped_variants %>% unite('locus', c('locus','alleles'),sep='_')
 
-AF_cl <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_cl_log0.txt",sep = '\t', header = T)
-AF_reg <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_RUS_REGIONS_log0.txt",sep = '\t', header = T)
+AF_cl <- read.table(AF_RUS_cl_log0,sep = '\t', header = T)
+AF_reg <- read.table(AF_RUS_REGIONS_log0,sep = '\t', header = T)
 
 AF_log2_ <- AF_log2 %>% mutate(IMP = case_when(locus %in% genotyped_variants$rsid ~ 'IMP_no',
                                                locus %!in% genotyped_variants$rsid ~ 'IMP_yes'))
@@ -325,15 +339,14 @@ AF_log2_ <- AF_log2_ %>% filter(RUS_NEFIN >2)
 AF_log2_ <- as.data.frame(merge(AF_log2_,AF_cl,by='locus'))
 AF_log2_ <- as.data.frame(merge(AF_log2_,AF_reg,by='locus'))
 ####
-AF_log2_ <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/AF_log2_.txt",sep = '\t', header = T)
 
-freq <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/EGDP/EGDP_rusEUR.afreq",sep = '\t', header = F)
+freq <- read.table(EGDP_rusEUR,sep = '\t', header = F)
 freq <- freq %>% dplyr::select(V2,V5)
 colnames(freq) <- c('locus','AF_EGDP')
 
 AF_log2_ <- as.data.frame(merge(AF_log2_,freq,by='locus',all.x=T))
 
-freq_block <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/ECCE_BLOCK/block_af.txt",sep = '\t', header = T)
+freq_block <- read.table(block_af,sep = '\t', header = T)
 colnames(freq_block) <- c('locus','alleles','AF')
 freq_block <- freq_block %>% unite('locus', c('locus','alleles'),sep='_')
 freq_block$AF <- gsub('\\[|\\]','',freq_block$AF)

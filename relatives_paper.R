@@ -3,20 +3,24 @@ library(dplyr)
 library(tidyr)
 library(igraph)
 
-duplicates <-  read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/duplicates_SEX_incorrect.txt",sep = '\t', header = F)
+duplicates <- 'txt file with IDs of duplicated samples'
+king_matrix <- 'plink kinship matrix'
+king_matrix_id <- 'IDs of plink kinship matrix'
+esse_pheno <- 'txt file of Russian phenotypes'
 
-king <-  read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/plink2.king",sep = '\t', header = F)
-king_id <-  read.table("/humgen/atgu1/methods/dusoltsev/biobank/HRC/plink2.king.id",sep = '\t', header = F)
+duplicates <-  read.table(duplicates,sep = '\t', header = F)
+
+king <-  read.table(king_matrix,sep = '\t', header = F)
+king_id <-  read.table(king_matrix_id,sep = '\t', header = F)
 colnames(king) <- king_id$V1
 row.names(king) <- king_id$V1
 king$sample = king_id$V1
 
 tmp_king <- melt(king,id=ncol(king)) 
-d <- tmp_king %>% filter(sample=='36-K-0474')
 tmp_king <- tmp_king %>% filter(value != 0)
 tmp_king <- tmp_king %>% filter(sample != variable) %>% dplyr::arrange(desc(value))
 tmp_king <- tmp_king %>% filter(sample %!in% duplicates$V1 & variable %!in% duplicates$V1)
-#write.table(tmp_king,"/humgen/atgu1/methods/dusoltsev/biobank/HRC/plink2.king_long", sep='\t',quote = F,row.names = F,col.names = F)
+#write.table(tmp_king,"plink2.king_long", sep='\t',quote = F,row.names = F,col.names = F)
 
 tmp_king_relatives <- tmp_king %>% filter(value >= 0.08838835)
 test <- tmp_king %>% filter(value <= 0.08838835 & value >= 0.04419417)
@@ -30,7 +34,7 @@ colnames(tmp_king_relatives)[3] <- 'weight'
 tmp_king_relatives$weight <- round(tmp_king_relatives$weight,3)
 colnames(tmp_king_relatives)[1:2] <- c('from','to')
 ##
-General <- read.table("/humgen/atgu1/methods/dusoltsev/biobank/General.tsv",sep = '\t', header = T)
+General <- read.table(esse_pheno,sep = '\t', header = T)
 
 ddd <- General %>% 
   dplyr::select(NP,BMI,AGE,SBP,DBP,HEI,WEI,DATEBIRTH,DateInform,PATIENTFIO,SEX)
@@ -85,7 +89,7 @@ for (i in 1:length(dg)) {
   col <- gsub('2nd',3,col)
   col <- gsub('3rd',4,col)
   col <- as.numeric(col)
-  png(paste('/humgen/atgu1/methods/dusoltsev/biobank/rel_graphs/',i,'.png',sep=''))
+  png(paste(i,'.png',sep=''))
   plot(dg[[i]],edge.color=c("red", "blue",'green','yellow')[col]) 
   dev.off()
 }
