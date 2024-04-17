@@ -1,0 +1,19 @@
+python3 make_list.py
+pheweb phenolist import-phenolist pheno-list.csv
+pheweb phenolist read-info-from-association-files
+pheweb cluster --engine=slurm --step=parse
+pheweb sites && pheweb make-gene-aliases-sqlite3 && pheweb add-rsids && pheweb add-genes
+sh vep.parse.sh
+Rscript pheweb.R
+pheweb make-cpras-rsids-sqlite3
+pheweb cluster --engine=slurm --step=augment-phenos
+pheweb cluster --engine=slurm --step=manhattan
+pheweb cluster --engine=slurm --step=qq
+pheweb best-of-pheno
+pheweb matrix
+pheweb gather-pvalues-for-each-gene
+pheweb top-hits
+pheweb phenotypes
+
+nextlow LDSC.ns
+pheweb pheno-correlation
